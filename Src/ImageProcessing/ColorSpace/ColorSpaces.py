@@ -24,9 +24,17 @@ if __name__ == '__main__':
 
         if Img is not None:
             HSV = cv2.cvtColor(Img, cv2.COLOR_BGR2HSV)
+            import time
+            T0 = time.time()
             H, S, V = cv2.split(HSV)
-            LowerBlue = np.array([100, 50, 50])
-            UpperBlue = np.array([140, 255, 255])
+            print 'split use time:', time.time() - T0
+            T0 = time.time()
+            H = HSV[:,:,0]
+            S = HSV[:,:,1]
+            V = HSV[:,:,2]
+            print 'idx use time:', time.time() - T0
+            LowerBlue = np.array([100, 100, 50])
+            UpperBlue = np.array([130, 255, 255])
             mask = cv2.inRange(HSV, LowerBlue, UpperBlue)
             BlueThings = cv2.bitwise_and(Img, Img, mask=mask)
             cv2.imshow('Mask', mask)
@@ -38,5 +46,8 @@ if __name__ == '__main__':
             Key = chr(cv2.waitKey(15) & 255)
             if Key == 'q':
                 break
+            elif Key == 's':
+                print 'save img:', cv2.imwrite(filename='../../../Datas/Output/ColorSpace_src.png', img=Img)
+                print 'save Blue:', cv2.imwrite(filename='../../../Datas/Output/ColorSpace_BlueThings.png', img=BlueThings)
     Cam.release()
     cv2.destroyAllWindows()

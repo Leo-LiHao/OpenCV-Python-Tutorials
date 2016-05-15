@@ -36,7 +36,8 @@ def OnMouse2(event, x, y, flags, *args):
 
 
 if __name__ == '__main__':
-    SrcImg = cv2.imread('../../Datas/Paper3.jpg')
+    First = True
+    SrcImg = cv2.imread('../../../Datas/Paper3.jpg')
     SrcCanvas = np.zeros(SrcImg.shape, dtype=np.uint8)
     cv2.namedWindow("Src", cv2.WINDOW_NORMAL)
     # cv2.namedWindow("Src")
@@ -56,31 +57,39 @@ if __name__ == '__main__':
         IPT.drawPoints(Img, np.array(LeftPoint).reshape(-1, 1), (0,0,255), radius=3)
         IPT.drawPoints(Canvas, np.array(RightPoint).reshape(-1, 1), (0,0,255), radius=3)
         for i in SrcPoints:
-            IPT.drawPoints(Img, i.reshape(-1, 1), (0,255,0), radius=3)
+            IPT.drawPoints(Img, i.reshape(-1, 1), (0,255,0), radius=7)
         for i in CanvasPoints:
-            IPT.drawPoints(Canvas, i.reshape(-1, 1), (0,255,0), radius=3)
+            IPT.drawPoints(Canvas, i.reshape(-1, 1), (0,255,0), radius=7)
 
         cv2.imshow('Src', Img)
         cv2.imshow('Canvas', Canvas)
         Key = chr(cv2.waitKey(30) & 255)
         if Key == 'l':
-            SrcPoints.append(np.array(LeftPoint).reshape(-1))
+            if len(SrcPoints) < 3:
+                SrcPoints.append(np.array(LeftPoint).reshape(-1))
         elif Key == 'r':
-            CanvasPoints.append(np.array(RightPoint).reshape(-1))
-        elif Key == 'p':
+            if len(CanvasPoints) < 3:
+                CanvasPoints.append(np.array(RightPoint).reshape(-1))
+        elif Key == 'p' or First:
+            First = False
             SrcPointsA = np.array(SrcPoints, dtype=np.float32)
             CanvasPointsA = np.array(CanvasPoints, dtype=np.float32)
             print 'SrcPoints:'
             print SrcPointsA
             print 'CanvasPoints:'
             print CanvasPointsA
-            AffineMatrix = cv2.getPerspectiveTransform(np.array(SrcPointsA),
-                                                       np.array(CanvasPointsA))
-            print 'AffineMatrix:\n', AffineMatrix
-            AffineImg = cv2.warpPerspective(Img, AffineMatrix, (300, 300))
-            cv2.imshow('AffineImg', AffineImg)
+            PerspectiveMatrix = cv2.getPerspectiveTransform(np.array(SrcPointsA),
+                                                            np.array(CanvasPointsA))
+            print 'PerspectiveMatrix:\n', PerspectiveMatrix
+            PerspectiveImg = cv2.warpPerspective(Img, PerspectiveMatrix, (300, 300))
+            cv2.imshow('PerspectiveImg', PerspectiveImg)
+            cv2.imwrite('../../../Datas/Output/PerspectiveImg.png', PerspectiveImg)
+            cv2.imwrite('../../../Datas/Output/Paper.jpg', Img)
         elif Key == 'f':
             SrcPoints = []
-            print 'reset'
+            print 'reset SrcPoints'
+        elif Key == 'f':
+            CanvasPoints = []
+            print 'reset CanvasPoints'
         elif Key == 'q':
             break

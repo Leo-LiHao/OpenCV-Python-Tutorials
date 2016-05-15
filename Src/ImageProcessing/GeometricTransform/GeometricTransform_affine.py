@@ -36,7 +36,8 @@ def OnMouse2(event, x, y, flags, *args):
 
 
 if __name__ == '__main__':
-    SrcImg = cv2.imread('../../Datas/lena.png')
+    First = True
+    SrcImg = cv2.imread('../../../Datas/AffineLena.png')
     SrcCanvas = np.zeros(SrcImg.shape, dtype=np.uint8)
     # cv2.namedWindow("Src", cv2.WINDOW_NORMAL)
     cv2.namedWindow("Src")
@@ -45,8 +46,8 @@ if __name__ == '__main__':
     # cv2.namedWindow("Canvas", cv2.WINDOW_NORMAL)
     cv2.setMouseCallback("Canvas", OnMouse2)
 
-    SrcPoints = np.float32([[223,121],[445,120],[222,307]])
-    CanvasPoints = np.float32([[108,121],[335,122],[113,283]])
+    SrcPoints = np.float32([[150,123],[439,174],[148,380]])
+    CanvasPoints = np.float32([[0,0],[512,0],[0,512]])
     while True:
         Img = SrcImg.copy()
         Canvas = SrcCanvas.copy()
@@ -61,10 +62,13 @@ if __name__ == '__main__':
         cv2.imshow('Canvas', Canvas)
         Key = chr(cv2.waitKey(30) & 255)
         if Key == 'l':
-            SrcPoints.append(np.array(LeftPoint).reshape(-1))
+            if len(SrcPoints) < 3:
+                SrcPoints.append(np.array(LeftPoint).reshape(-1))
         elif Key == 'r':
-            CanvasPoints.append(np.array(RightPoint).reshape(-1))
-        elif Key == 'a':
+            if len(CanvasPoints) < 3:
+                CanvasPoints.append(np.array(RightPoint).reshape(-1))
+        elif Key == 'a' or First:
+            First = False
             SrcPointsA = np.array(SrcPoints, dtype=np.float32)
             CanvasPointsA = np.array(CanvasPoints, dtype=np.float32)
             print 'SrcPoints:'
@@ -74,11 +78,14 @@ if __name__ == '__main__':
             AffineMatrix = cv2.getAffineTransform(np.array(SrcPointsA),
                                                   np.array(CanvasPointsA))
             print 'AffineMatrix:\n', AffineMatrix
-            AffineImg = cv2.warpAffine(Img, AffineMatrix, Img.shape[:2])
+            AffineImg = cv2.warpAffine(Img, AffineMatrix, (Img.shape[1], Img.shape[0]))
             cv2.imshow('AffineImg', AffineImg)
+            cv2.imwrite('../../../Datas/Output/InvAffineLena.png', AffineImg)
         elif Key == 'f':
             SrcPoints = []
+            print 'reset SrcPoints'
+        elif Key == 'r':
             CanvasPoints =[]
-            print 'reset'
+            print 'reset CanvasPoints'
         elif Key == 'q':
             break

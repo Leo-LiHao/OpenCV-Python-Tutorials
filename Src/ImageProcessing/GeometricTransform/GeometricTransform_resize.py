@@ -16,7 +16,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    Img = cv2.imread('../../Datas/lena.png')
+    Img = cv2.imread('../../../Datas/lena.png')
     ResizeImg = cv2.resize(src=Img, dsize=(Img.shape[1]*2, Img.shape[0]*2))
     T0 = time.time()
     ResizeImg = cv2.resize(src=Img, dsize=(Img.shape[1]*2, Img.shape[0]*2), interpolation=cv2.INTER_CUBIC)
