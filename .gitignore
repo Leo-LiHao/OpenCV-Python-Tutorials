@@ -1,0 +1,7 @@
+*.pyc
+*.so
+*.o
+*.xlsx
+*.xml
+*.avi
+.idea/
